@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  playerName  String
+  age         String
+  playerImage String
+  team        String
+  position    String
+
+  totalStats TotalStats[] @relation("TotalStatsToPlayer")
+  games      Game[]       @relation("Games")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Game {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  playerName          String
+  minutesPlayed       String
+  fieldGoals          String
+  fieldGoalAttempts   String
+  fieldGoalPercentage String
+  threePointers       String
+  twoPointers         String
+  totalRebounds       String
+  assists             String
+  blocks              String
+  turnovers           String
+  points              String
+
+  player   Player @relation("Games", fields: [playerId], references: [id], onDelete: Cascade)
+  playerId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+}
+
+model TotalStats {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  totalGamesPlayed    String
+  totalGamesStarted   String
+  minutesPlayed       String
+  fieldGoals          String
+  fieldGoalAttempts   String
+  fieldGoalPercentage String
+  threePointers       String
+  twoPointers         String
+  totalRebounds       String
+  assists             String
+  blocks              String
+  turnovers           String
+  points              String
+  freeThrows          String
+  freeThrowAttempts   String
+  steals              String
+
+  player   Player @relation("TotalStatsToPlayer", fields: [playerId], references: [id], onDelete: Cascade)
+  playerId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
