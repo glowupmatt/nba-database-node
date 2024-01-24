@@ -1,8 +1,8 @@
 import { JSDOM } from "jsdom";
 import axios from "axios";
-import { TotalStats } from "@prisma/client";
+import { TotalStatsData } from "../utils/types";
 
-export const getJsonDataTotalForScript = async () => {
+export const getTotalStatsJson = async () => {
   const dataSelectors = [
     { name: "playerName", selector: "td[csk]" },
     { name: "team", selector: "td[data-stat='team_id']" },
@@ -20,13 +20,12 @@ export const getJsonDataTotalForScript = async () => {
     { name: "blocks", selector: "td[data-stat='blk']" },
     { name: "turnovers", selector: "td[data-stat='tov']" },
     { name: "points", selector: "td[data-stat='pts']" },
-    { name: "playerImage", selector: "td[data-append-csv]" },
     { name: "freeThrows", selector: "td[data-stat='ft']" },
     { name: "freeThrowAttempts", selector: "td[data-stat='fta']" },
     { name: "steals", selector: "td[data-stat='stl']" },
   ];
 
-  const tableData: TotalStats[] = [];
+  const tableData: TotalStatsData[] = [];
   const response = await axios.get(
     "https://www.basketball-reference.com/leagues/NBA_2024_totals.html"
   );
@@ -42,20 +41,16 @@ export const getJsonDataTotalForScript = async () => {
       const data = cell?.textContent?.trim();
       if (data) {
         player[dataSelector.name] = data;
-      }
-      if (dataSelector.name === "playerImage") {
-        const playerId = cell?.getAttribute("data-append-csv");
-        player[
-          dataSelector.name
-        ] = `https://www.basketball-reference.com/req/202106291/images/headshots/${playerId}.jpg`;
+      } else {
+        player[dataSelector.name] = "0";
       }
     });
     if (Object.keys(player).length !== 0) {
-      tableData.push(player as TotalStats);
+      tableData.push(player as TotalStatsData);
     }
   });
 
   return tableData;
 };
 
-export default getJsonDataTotalForScript;
+export default getTotalStatsJson;

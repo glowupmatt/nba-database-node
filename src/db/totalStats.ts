@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import axios from "axios";
 import { UpdateData } from "utils/types";
-
+import express from "express";
 const URL = process.env.DEVELOPMENT_URL || "http://localhost:3000";
 
-//GAME ACTIONS
+//TotalStats ACTIONS
 
-export const createGames = async (id: string, body: UpdateData) => {
+export const createTotalStats = async (id: string, body: UpdateData) => {
   try {
     if (body.playerName === "undefined") {
       console.log("PLAYER NAME UNDEFINED");
@@ -14,6 +14,8 @@ export const createGames = async (id: string, body: UpdateData) => {
     } else {
       const dbData: UpdateData = {
         playerName: body.playerName,
+        totalGamesPlayed: body.totalGamesPlayed,
+        totalGamesStarted: body.totalGamesStarted,
         minutesPlayed: body.minutesPlayed,
         fieldGoals: body.fieldGoals,
         fieldGoalAttempts: body.fieldGoalAttempts,
@@ -25,13 +27,23 @@ export const createGames = async (id: string, body: UpdateData) => {
         blocks: body.blocks,
         turnovers: body.turnovers,
         points: body.points,
+        freeThrows: body.freeThrows,
+        freeThrowAttempts: body.freeThrowAttempts,
+        steals: body.steals,
       };
-      const response = await axios.put(`${URL}/create-games/${id}`, dbData);
+      const response = await axios.put(
+        `${URL}/create-total-stats/${id}`,
+        dbData
+      );
       const data = response.data;
-      console.log(`called api for ${body.playerName} game stats`);
-      return data;
+      console.log(`called api for ${body.playerName} total stats`);
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(data);
+        }, 1000);
+      });
     }
   } catch (error) {
-    console.log(error, "ERROR IN CREATE GAMES, ROUTER");
+    console.log(error, "ERROR IN CREATE TOTAL STATS, ROUTER");
   }
 };

@@ -31,6 +31,10 @@ export default async function deleteAllPlayers(
         where: {
           id,
         },
+        include: {
+          games: true,
+          totalStats: true,
+        },
       });
       console.log(`DELETED ${id} FROM DB`);
     });
